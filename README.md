@@ -128,12 +128,12 @@ This script is provided "as is" without warranty of any kind. Use at your own ri
 Contributions to improve the script or add new features are welcome. Please submit pull requests or open issues on the project's repository.
 
 ## Credit
-Aldaviva - Fail2Ban4Win
-ION28 - BLUESPAWN
-Apr4h - CobaltStrikeScan 
-ahmedkhlief - APT-Hunter 
-SANS Blue Team - DeepBlueCLI
-Netwrix - PingCastle
-last0x00 and dottoe_morte - PersistanceSniper
+- Aldaviva - Fail2Ban4Win
+- ION28 - BLUESPAWN
+- Apr4h - CobaltStrikeScan 
+- ahmedkhlief - APT-Hunter 
+- SANS Blue Team - DeepBlueCLI
+- Netwrix - PingCastle
+- last0x00 and dottoe_morte - PersistanceSniper
 ------------------------------------
 This post was created by the Shadow Wizard PowerShell Gang
