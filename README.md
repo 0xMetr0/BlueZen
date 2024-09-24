@@ -112,7 +112,7 @@ Future plans and improvements are noted in comments in the script and have not b
 - Create a rapid log enabling function
 - Module support??
 - Add a configuration file
-- Add Fail2Ban4Win
+- Add Fail2Ban4Win back in
 - Create a more comprehensive system audit:
     - Full net scan
     - Everything AD (users, groups, group policy etc.)
@@ -128,6 +128,12 @@ This script is provided "as is" without warranty of any kind. Use at your own ri
 Contributions to improve the script or add new features are welcome. Please submit pull requests or open issues on the project's repository.
 
 ## Credit
-
+Aldaviva - Fail2Ban4Win
+ION28 - BLUESPAWN
+Apr4h - CobaltStrikeScan 
+ahmedkhlief - APT-Hunter 
+SANS Blue Team - DeepBlueCLI
+Netwrix - PingCastle
+last0x00 and dottoe_morte - PersistanceSniper
 ------------------------------------
 This post was created by the Shadow Wizard PowerShell Gang
