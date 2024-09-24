@@ -21,7 +21,7 @@ BlueZen is currently working on the following server versions:
 ## Usage
 1. Download the script file (`MJ.ps1`) to your desired location.
 1. Open PowerShell as an **Administrator** 
-2. Allow the script by either running ```Get-ExecutionPolicy -Scope Unrestricted``` or copy the code into your own .ps1 file.
+2. Allow the script by either running ```Set-ExecutionPolicy -Scope CurrentUser Unrestricted``` or copy the code into your own .ps1 file.
 3. Navigate to the directory containing the script.
 2. Run the script using the following command:
    ```
