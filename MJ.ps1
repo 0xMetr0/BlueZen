@@ -159,7 +159,18 @@ Write-Words "
 "
     
 }
+
 function Get-NonEphemeralPortsInUse {
+    <#
+    .SYNOPSIS
+    Gathers all assignable ports, displays them, and outputs them to a file
+    
+    .DESCRIPTION
+    Long description
+    
+    .NOTES
+    Windows 2012 R2 currently doesn't like this implimentation 
+    #>
     Write-Words "Gathering Ports..."
     $nonEphemeralPortRange = 1..49151
     $tcpConnections = Get-NetTCPConnection
@@ -180,7 +191,17 @@ function Get-NonEphemeralPortsInUse {
     Write-Words "List of non-ephemeral ports currently in use has been saved to $filePath"
 }
 function Enforce-GPO{
-    Invoke-WebRequest "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_STIG_GPO_Package_April_2024.zip" -Out "$MainFolderPath\U_STIG_GPO_Package.zip"
+    <#
+    .SYNOPSIS
+    Downloads the DOD STIG GPOs and allows users to select which policy to apply to the machine.
+    
+    .NOTES
+    This script currently statically downloads the April 2024.
+    This script currently automatically downloads and applies the GPO.
+    #>
+    if ([System.IO.File]::Exists("$MainFolderPath\U_STIG_GPO_Package.zip" -eq $false)){ 
+        Invoke-WebRequest "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_STIG_GPO_Package_April_2024.zip" -Out "$MainFolderPath\U_STIG_GPO_Package.zip"
+    }
     Expand-Archive -Path "$MainFolderPath\U_STIG_GPO_Package.zip" -Destination "$MainFolderPath\U_STIG_GPO_Package" -Force
     Import-Module GroupPolicy
     $serverVersions = @("Windows Server 2012", "Windows Server 2016", "Windows Server 2019", "Windows Server 2022")
@@ -495,7 +516,9 @@ Function Get-HardeningKittyFunction{
     Show-HKMenu
 }
 function Install-PersistanceSniper{
-    Invoke-WebRequest "https://github.com/last-byte/PersistenceSniper/archive/refs/heads/main.zip" -Out "$MainFolderPath\PS.zip"
+    if ([System.IO.File]::Exists("$MainFolderPath\PS.zip") -eq $false){ 
+        Invoke-WebRequest "https://github.com/last-byte/PersistenceSniper/archive/refs/heads/main.zip" -Out "$MainFolderPath\PS.zip"
+    }
     Expand-Archive -Path $MainFolderPath\PS.zip -DestinationPath $MainFolderPath -Force
     Set-Location -Path $MainFolderPath\PersistenceSniper-main\PersistenceSniper
     Import-Module -Name "$MainFolderPath\PersistenceSniper-main\PersistenceSniper\PersistenceSniper.psm1"
@@ -503,28 +526,38 @@ function Install-PersistanceSniper{
     Find-AllPersistence
 }
 function Install-BlueSpawn{
-    Invoke-WebRequest "https://github.com/ION28/BLUESPAWN/releases/download/v0.5.1-alpha/BLUESPAWN-client-x64.exe" -OutFile "$MainFolderPath\BLUESPAWN-client-x64.exe"
+    if ([System.IO.File]::Exists("$MainFolderPath\BLUESPAWN-client-x64.exe") -eq $false){ 
+        Invoke-WebRequest "https://github.com/ION28/BLUESPAWN/releases/download/v0.5.1-alpha/BLUESPAWN-client-x64.exe" -OutFile "$MainFolderPath\BLUESPAWN-client-x64.exe"
+    }
     Start-Process cmd -ArgumentList "/c $MainFolderPath\BLUESPAWN-client-x64.exe --hunt -a intensive --log=console,xml & pause" #-o '$MainFolderPath\Log\ find a way to keep the log here
     Start-Process cmd -ArgumentList "/c $MainFolderPath\BLUESPAWN-client-x64.exe  --mitigate --mode=enforce --enforcement-level=all & pause" #-o '$MainFolderPath\Log\ find a way to keep the log here
 }
 function Install-PingCastle{
-    Invoke-WebRequest "https://github.com/vletoux/pingcastle/releases/download/3.2.0.1/PingCastle_3.2.0.1.zip" -Out "$MainFolderPath\PingCastle.zip"
+    if ([System.IO.File]::Exists("$MainFolderPath\PingCastle.zip") -eq $false){ 
+        Invoke-WebRequest "https://github.com/vletoux/pingcastle/releases/download/3.2.0.1/PingCastle_3.2.0.1.zip" -Out "$MainFolderPath\PingCastle.zip"
+    }
     Expand-Archive -Path $MainFolderPath\PingCastle.zip -Destination "$MainFolderPath\PingCastle" -Force
     Invoke-Expression "start $MainFolderPath\PingCastle\PingCastle.exe"
 }
 function Install-APTHunter {
+    if ([System.IO.File]::Exists("$MainFolderPath\APT-Hunter.exe") -eq $false){ 
     Invoke-WebRequest "https://github.com/ahmedkhlief/APT-Hunter/releases/download/V3.2/APT-Hunter.exe" -Out "$MainFolderPath\APT-Hunter.exe"
+    }
     $eventlogs = "C:\Windows\System32\winevt\Logs" 
     & "$MainFolderPath\APT-Hunter.exe" -allreport -p $eventlogs
 
 }
 function Install-CobaltStrikeScan {
-    Invoke-WebRequest "https://github.com/Apr4h/CobaltStrikeScan/releases/download/1.1.2/CobaltStrikeScan.exe" -Out "$MainFolderPath\CobaltStrikeScan.exe"
-    Start-Process cmd -ArgumentList "/c start $MainFolderPath\CobaltStrikeScan.exe -p -d & pause"
+    if ([System.IO.File]::Exists("$MainFolderPath\CobaltStrikeScan.exe") -eq $false){ 
+        Invoke-WebRequest "https://github.com/Apr4h/CobaltStrikeScan/releases/download/1.1.2/CobaltStrikeScan.exe" -Out "$MainFolderPath\CobaltStrikeScan.exe"
+    }
+        Start-Process cmd -ArgumentList "/c start $MainFolderPath\CobaltStrikeScan.exe -p -d & pause"
 
 }
 function Install-DeepBlue{
-    Invoke-WebRequest "https://github.com/sans-blue-team/DeepBlueCLI/archive/refs/heads/master.zip" -Out "$MainFolderPath\DeepBlueCLI.zip"
+    if ([System.IO.File]::Exists("$MainFolderPath\DeepBlueCLI.zip") -eq $false){  
+        Invoke-WebRequest "https://github.com/sans-blue-team/DeepBlueCLI/archive/refs/heads/master.zip" -Out "$MainFolderPath\DeepBlueCLI.zip"
+    }
     Expand-Archive -Path $MainFolderPath\DeepBlueCLI.zip -DestinationPath $MainFolderPath\ -Force
     Copy-Item "$MainFolderPath\DeepBlueCLI-master*" "$MainFolderPath\DeepBlue" -recurse
     Remove-Item $MainFolderPath\DeepBlueCLI-master -recurse
@@ -535,8 +568,10 @@ function Install-Python3 {
     $pythonInstallerUrl = "https://www.python.org/ftp/python/3.12.4/python-3.12.4-amd64.exe"
     $installerPath = "$MainFolderPath\python-3.12.4-amd64.exe"
     Write-Words "Downloading Python 3 installer..."
-    Invoke-WebRequest -Uri $pythonInstallerUrl -OutFile $installerPath # Download the Python installer
-    #Check if the installer was downloaded successfully
+    if ([System.IO.File]::Exists("$MainFolderPath\python-3.12.4-amd64.exe") -eq $false){  
+        Invoke-WebRequest -Uri $pythonInstallerUrl -OutFile $installerPath # Download the Python installer
+    }
+        #Check if the installer was downloaded successfully
     if (Test-Path $installerPath) {
         Write-Words "Download complete. Running the installer..."
         Start-Process -FilePath "powershell" -ArgumentList "-Command Start-Process -FilePath '$installerPath' -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait" -Verb RunAs -Wait
@@ -544,22 +579,26 @@ function Install-Python3 {
 }
 function Get-Sysinternals{
     Write-Words "Downloading Sysinternals..."
-    Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -Out "$MainFolderPath\Sysinternals.zip"
-    Write-Words "Download Complete!"
+    if ([System.IO.File]::Exists("$MainFolderPath\Sysinternals.zip") -eq $false){  
+        Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -Out "$MainFolderPath\Sysinternals.zip"
+    }
+        Write-Words "Download Complete!"
     Expand-Archive -Path $MainFolderPath\Sysinternals.zip -DestinationPath "$MainFolderPath\Sysinternals" -Force
 }
 function Install-Laps{
     Write-Words "Downloading LAPS..."
-    $LapsPath = "$MainFolderPath\LAPS.x64.msi"
-    Invoke-WebRequest -Uri "https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi" -Out $LapsPath
-    Start-Process -FilePath $LapsPath
+    if ([System.IO.File]::Exists("$MainFolderPath\Sysinternals.zip") -eq $false){  
+        Invoke-WebRequest -Uri "https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi" -Out "$MainFolderPath\LAPS.x64.msi"
+    }
+    Start-Process -FilePath "$MainFolderPath\LAPS.x64.msi"
 }
 
 function Install-NortonPowerEraser{
     Write-Words "Downloading Norton PowerEraser..."
-    $LapsPath = "$MainFolderPath\NPE.exe"
-    Invoke-WebRequest -Uri "https://www.norton.com/npe_latest" -Out $LapsPath
-    Start-Process -FilePath $LapsPath
+    if ([System.IO.File]::Exists("$MainFolderPath\Sysinternals.zip") -eq $false){  
+        Invoke-WebRequest -Uri "https://www.norton.com/npe_latest" -Out "$MainFolderPath\NPE.exe"
+    }
+    Start-Process -FilePath "$MainFolderPath\NPE.exe"
 }
 
 function Create-RecoveryPoints {
@@ -588,7 +627,9 @@ function Install-Sysmon {
     $InstallPath = "$MainFolderPath\Sysmon"
     if (-not (Test-Path -Path $InstallPath)) { New-Item -ItemType Directory -Path $InstallPath -Force}
     $zipPath = "$MainFolderPath\Sysmon.zip"; $extractedPath = "$MainFolderPath\Sysmon"# Define paths for download and extraction
-    Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile $zipPath;Write-Words "Getting Eyes Up With Sysmon..."
+    if ([System.IO.File]::Exists($extractedPath) -eq $false){ 
+        Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile $zipPath;Write-Words "Getting Eyes Up With Sysmon..."
+    }
     if (Test-Path $zipPath) {
         Write-Words "Download complete!"
         Write-Words "Extracting Sysmon..."
@@ -769,24 +810,19 @@ Function Get-BlueZenTools{
     .Notes
     Needs HardeningKitty
     #>
-    #searches for sysinternal
-    Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -Out "$MainFolderPath\Sysinternals.zip"
-    Expand-Archive -Path $MainFolderPath\Sysinternals.zip -DestinationPath "$MainFolderPath\Sysinternals" -Force
-    #searches for sysinternal
-    $LapsPath = "$MainFolderPath\LAPS.x64.msi"
-    Invoke-WebRequest -Uri "https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi" -Out $LapsPath
-    Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile $zipPath;Write-Words "Getting Eyes Up With Sysmon..."
-    Invoke-WebRequest -Uri "https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi" -Out $LapsPath
-    Invoke-WebRequest "https://github.com/ION28/BLUESPAWN/releases/download/v0.5.1-alpha/BLUESPAWN-client-x64.exe" -OutFile "$MainFolderPath\BLUESPAWN-client-x64.exe"
-    Invoke-WebRequest "https://github.com/vletoux/pingcastle/releases/download/3.2.0.1/PingCastle_3.2.0.1.zip" -Out "$MainFolderPath\PingCastle.zip"
-    Invoke-WebRequest "https://github.com/last-byte/PersistenceSniper/archive/refs/heads/main.zip" -Out "$MainFolderPath\PS.zip"
-    Invoke-WebRequest "https://github.com/ahmedkhlief/APT-Hunter/releases/download/V3.2/APT-Hunter.exe" -Out "$MainFolderPath\APT-Hunter.exe"
-    Invoke-WebRequest "https://github.com/WithSecureLabs/chainsaw/releases/download/v2.9.1/chainsaw_all_platforms+rules+examples.zip" -Out "$MainFolderPath\Chainsaw.zip"
-    Invoke-WebRequest "https://github.com/Apr4h/CobaltStrikeScan/releases/download/1.1.2/CobaltStrikeScan.exe" -Out "$MainFolderPath\CobaltStrikeScan.exe"
-    Invoke-WebRequest "https://github.com/sans-blue-team/DeepBlueCLI/archive/refs/heads/master.zip" -Out "$MainFolderPath\DeepBlueCLI.zip"
-    Invoke-WebRequest "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_STIG_GPO_Package_April_2024.zip" -Out "$MainFolderPath\U_STIG_GPO_Package.zip"
-    Invoke-WebRequest "https://github.com/Aldaviva/Fail2Ban4Win/releases/download/1.2.0/Fail2Ban4Win.zip" -Out "$MainFolderPath\Fail2Ban4Win.zip"
-    Invoke-WebRequest -Uri "https://www.norton.com/npe_latest" -Out $LapsPath
+    if ([System.IO.File]::Exists("$MainFolderPath\Sysinternals.zip") -eq $false){  Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -Out "$MainFolderPath\Sysinternals.zip"}
+    if ([System.IO.File]::Exists("$MainFolderPath\Sysmon.zip") -eq $false){  Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile "$MainFolderPath\Sysmon.zip";Write-Words "Getting Eyes Up With Sysmon..."}
+    if ([System.IO.File]::Exists("$MainFolderPath\LAPS.x64.msi") -eq $false){  Invoke-WebRequest -Uri "https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi" -Out "$MainFolderPath\LAPS.x64.msi"}
+    if ([System.IO.File]::Exists("$MainFolderPath\BLUESPAWN-client-x64.exe") -eq $false){  Invoke-WebRequest "https://github.com/ION28/BLUESPAWN/releases/download/v0.5.1-alpha/BLUESPAWN-client-x64.exe" -OutFile "$MainFolderPath\BLUESPAWN-client-x64.exe"}
+    if ([System.IO.File]::Exists("$MainFolderPath\PingCastle.zip") -eq $false){  Invoke-WebRequest "https://github.com/vletoux/pingcastle/releases/download/3.2.0.1/PingCastle_3.2.0.1.zip" -Out "$MainFolderPath\PingCastle.zip"}
+    if ([System.IO.File]::Exists("$MainFolderPath\PS.zip") -eq $false){  Invoke-WebRequest "https://github.com/last-byte/PersistenceSniper/archive/refs/heads/main.zip" -Out "$MainFolderPath\PS.zip"}
+    if ([System.IO.File]::Exists("$MainFolderPath\APT-Hunter.exe") -eq $false){  Invoke-WebRequest "https://github.com/ahmedkhlief/APT-Hunter/releases/download/V3.2/APT-Hunter.exe" -Out "$MainFolderPath\APT-Hunter.exe"}
+    if ([System.IO.File]::Exists("$MainFolderPath\Chainsaw.zip") -eq $false){  Invoke-WebRequest "https://github.com/WithSecureLabs/chainsaw/releases/download/v2.9.1/chainsaw_all_platforms+rules+examples.zip" -Out "$MainFolderPath\Chainsaw.zip"}
+    if ([System.IO.File]::Exists("$MainFolderPath\CobaltStrikeScan.exe") -eq $false){  Invoke-WebRequest "https://github.com/Apr4h/CobaltStrikeScan/releases/download/1.1.2/CobaltStrikeScan.exe" -Out "$MainFolderPath\CobaltStrikeScan.exe"}
+    if ([System.IO.File]::Exists("$MainFolderPath\DeepBlueCLI.zip") -eq $false){  Invoke-WebRequest "https://github.com/sans-blue-team/DeepBlueCLI/archive/refs/heads/master.zip" -Out "$MainFolderPath\DeepBlueCLI.zip"}
+    if ([System.IO.File]::Exists("$MainFolderPath\U_STIG_GPO_Package.zip") -eq $false){  Invoke-WebRequest "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_STIG_GPO_Package_April_2024.zip" -Out "$MainFolderPath\U_STIG_GPO_Package.zip"}
+    if ([System.IO.File]::Exists("$MainFolderPath\Fail2Ban4Win.zip") -eq $false){  Invoke-WebRequest "https://github.com/Aldaviva/Fail2Ban4Win/releases/download/1.2.0/Fail2Ban4Win.zip" -Out "$MainFolderPath\Fail2Ban4Win.zip"}
+    if ([System.IO.File]::Exists("$MainFolderPath\NPE.exe") -eq $false){  Invoke-WebRequest -Uri "https://www.norton.com/npe_latest" -Out "$MainFolderPath\NPE.exe"}
 
 }
 function Run-AllAudits {
@@ -859,7 +895,9 @@ function Get-ChainsawFunctions{
     }
     function Install-Chainsaw{
         Write-Words "Revving up Chainsaw..."
-        Invoke-WebRequest "https://github.com/WithSecureLabs/chainsaw/releases/download/v2.9.1/chainsaw_all_platforms+rules+examples.zip" -Out "$MainFolderPath\Chainsaw.zip"
+        if ([System.IO.File]::Exists("$MainFolderPath\Chainsaw.zip") -eq $false){  
+            Invoke-WebRequest "https://github.com/WithSecureLabs/chainsaw/releases/download/v2.9.1/chainsaw_all_platforms+rules+examples.zip" -Out "$MainFolderPath\Chainsaw.zip"
+        }
         Expand-Archive -Path $MainFolderPath\Chainsaw.zip -DestinationPath $MainFolderPath
         Start-Process cmd -ArgumentList "/c $MainFolderPath\chainsaw\chainsaw_x86_64-pc-windows-msvc.exe"
     }
@@ -1120,7 +1158,9 @@ function Get-F2B4WFunctions {
     function Install-Fail2Ban4Win{
         if (Confirm-Action "Do you want to install Fail2Ban4Win?" -DefaultYes) {
             Write-Words "Starting Fail2Ban4Win installation..."
-            Invoke-WebRequest "https://github.com/Aldaviva/Fail2Ban4Win/releases/download/1.2.0/Fail2Ban4Win.zip" -Out "$MainFolderPath\Fail2Ban4Win.zip"
+            if ([System.IO.File]::Exists("$MainFolderPath\Fail2Ban4Win.zip") -eq $false){ 
+                Invoke-WebRequest "https://github.com/Aldaviva/Fail2Ban4Win/releases/download/1.2.0/Fail2Ban4Win.zip" -Out "$MainFolderPath\Fail2Ban4Win.zip"
+            }
             Expand-Archive -Path $MainFolderPath\Fail2Ban4Win.zip -DestinationPath "C:\'Program Files (x86)'\Fail2Ban4Win\"
             Set-ExecutionPolicy Unrestricted -Scope Process -Force
             C:\'Program Files (x86)'\Fail2Ban4Win\'Install service.ps1'
@@ -1170,7 +1210,9 @@ function Update-PowerShell {
             }
             $installerPath = "$env:TEMP\Win7AndW2K8R2-KB3191566-x64.msu"
             # Download the installer
-            Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath
+            if ([System.IO.File]::Exists("$env:TEMP\Win7AndW2K8R2-KB3191566-x64.msu") -eq $false){ 
+                Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath
+            }
             # Install the update
             Start-Process -FilePath "wusa.exe" -ArgumentList "$installerPath /quiet /norestart" -Wait
             Write-Words -ForegroundColor Yellow "PowerShell has been updated. Please restart your system to complete the installation."
@@ -1226,13 +1268,13 @@ $skipCounter = 1
 $currentColorIndex = 0
 $OutputSelector = 0
 Get-Banner
-$MainFolderPath = Get-Childitem –Path C:\Users -Include *MJs-Awesome-Script* -Recurse -ErrorAction SilentlyContinue ; $MainFolderPath = $MainFolderPath.FullName
+$MainFolderPath = Get-Childitem –Path C:\Users -Include *BlueZen* -Recurse -ErrorAction SilentlyContinue ; $MainFolderPath = $MainFolderPath.FullName
 if ($MainFolderPath -eq $null){
-    Write-Words "Main Folder not found. Creating MJs-Awesome-Script at scripts location."
+    Write-Words "Main Folder not found. Creating BlueZen at scripts location."
     $MainFolderPath = Get-Childitem –Path C:\Users -Include *MJ.ps1 -Recurse -ErrorAction SilentlyContinue
-    New-Item -Path $MainFolderPath.DirectoryName -Name "MJs-Awesome-Script" -ItemType Directory | Out-Null
+    New-Item -Path $MainFolderPath.DirectoryName -Name "BlueZen" -ItemType Directory | Out-Null
     $MainFolderPath = $MainFolderPath.DirectoryName
-    $MainFolderPath = "$MainFolderPath\MJs-Awesome-Script"
+    $MainFolderPath = "$MainFolderPath\BlueZen"
     New-Item -Path $MainFolderPath -Name "Log" -ItemType Directory | Out-Null
 }
 Update-PowerShell
