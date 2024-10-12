@@ -840,11 +840,11 @@ function Show-ToolMenu {
     ==============================================
     |             Tool Functions Menu            |
     ==============================================
-    |  1. Harden Kitty:3                         |
-    |  2. Pweez dont Snipe my persistance mista~ |
-    |  3. Mods, Spawn Blue Balls (BlueSpawn)     |
-    |  4. Ping in the High Castle (PingCastle)   |
-    |  5. Rip it Up With Chainsaw (Chainsaw)     |
+    |  1. Harden Kitty:3 (Automatic Hardening)   |
+    |  2. Backdoor Detox 3000 (Remove Backdoors) |
+    |  3. Mods, Spawn Blue Balls (EDR)           |
+    |  4. Ping in the High Castle (Assess AD)    |
+    |  5. Rip it Up With Chainsaw (Event Logs)   |
     |  6. Fail2Ban4Win 4 the Win                 |
     |  7. Install APTHunter                      |
     |  8. Install CobaltStrikeScan               |
