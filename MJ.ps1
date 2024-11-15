@@ -1260,6 +1260,8 @@ function Run-SafeFunctions {
 
 
 # Main script execution
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$PSDefaultParameterValues['*:Encoding'] = 'utf8'
 #To enable TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 #To enable all security protocols
