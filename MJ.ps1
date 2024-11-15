@@ -1253,7 +1253,6 @@ function Run-SafeFunctions {
 
 
 # Main script execution
-# Add this at the very beginning of your script (before any other code)
 if ($MyInvocation.MyCommand.Path) {
     $scriptPath = $MyInvocation.MyCommand.Path
     try {
