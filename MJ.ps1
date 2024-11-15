@@ -1294,7 +1294,7 @@ $scriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 $MainFolderPath = Get-ChildItem -Path $scriptDirectory -Filter "BlueZen" -Directory | Select-Object -ExpandProperty FullName
 if ([string]::IsNullOrEmpty($MainFolderPath)){
     Write-Words "Main Folder not found. Creating BlueZen at scripts location."
-    $MainFolderPath = Get-Childitem –Path C:\Users -Include *MJ.ps1 -Recurse -ErrorAction SilentlyContinue
+    $MainFolderPath = Get-Childitem �Path C:\Users -Include *MJ.ps1 -Recurse -ErrorAction SilentlyContinue
     New-Item -Path $scriptDirectory -Name "BlueZen" -ItemType Directory | Out-Null
     $MainFolderPath = $scriptDirectory
     $MainFolderPath = "$MainFolderPath\BlueZen"
