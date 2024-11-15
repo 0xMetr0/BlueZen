@@ -1252,16 +1252,37 @@ function Run-SafeFunctions {
 }
 
 
-
-
-
-
-
-
-
 # Main script execution
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$PSDefaultParameterValues['*:Encoding'] = 'utf8'
+# Add this at the very beginning of your script (before any other code)
+if ($MyInvocation.MyCommand.Path) {
+    $scriptPath = $MyInvocation.MyCommand.Path
+    try {
+        $bytes = Get-Content -Path $scriptPath -Encoding Byte -TotalCount 4
+        $currentEncoding = if ($bytes[0] -eq 0xef -and $bytes[1] -eq 0xbb -and $bytes[2] -eq 0xbf) {"UTF8-BOM"} else {"Unknown"}
+        Write-Host "Current encoding detected as: $currentEncoding"
+        if ($currentEncoding -ne "UTF8-BOM") {
+            Write-Host "Converting to UTF-8..."
+            # Read content and ensure we have it
+            $content = Get-Content -Path $scriptPath -Raw
+            if ([string]::IsNullOrEmpty($content)) {throw "Failed to read script content"}
+            # Convert to UTF-8 with BOM
+            $utf8WithBOM = New-Object System.Text.UTF8Encoding $true
+            [System.IO.File]::WriteAllLines($scriptPath, $content, $utf8WithBOM)
+            $newBytes = Get-Content -Path $scriptPath -Encoding Byte -TotalCount 4
+            Write-Host "Script encoding has been converted to UTF-8. Please run the script again."
+            Start-Sleep -Seconds 2
+            Exit 1
+        }
+    }
+    catch {
+        Write-Host "Error during encoding conversion: $_"
+        if (Test-Path "$scriptPath.backup") {
+            Write-Host "Restoring from backup..."
+            Copy-Item -Path "$scriptPath.backup" -Destination $scriptPath -Force
+        }
+        Exit 1
+    }
+}
 #To enable TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 #To enable all security protocols
@@ -1270,12 +1291,13 @@ $skipCounter = 1
 $currentColorIndex = 0
 $OutputSelector = 0
 Get-Banner
-$MainFolderPath = Get-Childitem –Path C:\Users -Include *BlueZen* -Recurse -ErrorAction SilentlyContinue ; $MainFolderPath = $MainFolderPath.FullName
-if ($MainFolderPath -eq $null){
+$scriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
+$MainFolderPath = Get-ChildItem -Path $scriptDirectory -Filter "BlueZen" -Directory | Select-Object -ExpandProperty FullName
+if ([string]::IsNullOrEmpty($MainFolderPath)){
     Write-Words "Main Folder not found. Creating BlueZen at scripts location."
     $MainFolderPath = Get-Childitem –Path C:\Users -Include *MJ.ps1 -Recurse -ErrorAction SilentlyContinue
-    New-Item -Path $MainFolderPath.DirectoryName -Name "BlueZen" -ItemType Directory | Out-Null
-    $MainFolderPath = $MainFolderPath.DirectoryName
+    New-Item -Path $scriptDirectory -Name "BlueZen" -ItemType Directory | Out-Null
+    $MainFolderPath = $scriptDirectory
     $MainFolderPath = "$MainFolderPath\BlueZen"
     New-Item -Path $MainFolderPath -Name "Log" -ItemType Directory | Out-Null
 }
