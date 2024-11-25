@@ -1,6 +1,6 @@
 # BlueZen
 
-Welcome to the culmination of my quest to touch microsoft explorer when setting up for blue team competitions like HiveStorm and CCDC. BlueZen is a comprehensive PowerShell script designed for Windows system administrators and cybersecurity professionals. It provides a suite of tools and functions for system auditing, security hardening, and threat detection. Halfway through creating this I realized that its just the open-source bazzaro world version of Commando-vm by Mandiant and I'm here for it.
+Welcome to the culmination of my quest to touch microsoft explorer as little as possible when setting up for blue team competitions like HiveStorm and CCDC. BlueZen is a comprehensive PowerShell script designed for Windows system administrators and cybersecurity professionals. It provides a suite of tools and functions for system auditing, security hardening, and threat detection. Halfway through creating this I realized that its just the open-source bazzaro world version of Commando-vm by Mandiant and I'm here for it.
 BlueZen is currently working on the following server versions:
 - Windows Server 2022
 - Windows Server 2019
