@@ -305,18 +305,28 @@ function Test-InternetConnection {
         Write-Words -ForegroundColor Red "Internet connection: Not available"
     }
 }
-function Get-PowerShellHistory {
+Function Get-PowerShellHistory {
     $logFile = "$MainFolderPath\Log\PowerShellHistory.txt"
-    if (Get-Command -Name Get-History -ErrorAction SilentlyContinue) {
-        $psHistory = Get-History
-        Add-Content -Path $logFile -Value "PowerShell History:"
-        $psHistory | ForEach-Object { Add-Content -Path $logFile -Value $_.CommandLine }
-        Write-Words "These dumbasses left this in the PowerShell History:"
-        Write-Words "----------------------------------------------------"
-        $psHistory | ForEach-Object { Write-Words $_.CommandLine }
-    } else {
-        Add-Content -Path $logFile -Value "PowerShell history is not available."
-        Write-Words -ForegroundColor Red "PowerShell history is not available."
+    $users = Get-LocalUser
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    Add-Content -Path $logFile -Value "PowerShell History - Generated $timestamp"
+    Write-Words "PowerShell History - Generated $timestamp"
+    foreach ($user in $users){
+        if ($user.Enabled){
+            $username = $user.name
+            try{
+                $psHistory = Get-Content "C:\Users\$username\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt" -ErrorAction Stop
+                Add-Content -Path $logFile -Value "---------"
+                Add-Content -Path $logFile -Value "User: $username"
+                Add-Content -Path $logFile -Value "---------"
+                Write-Words "$username left this in the PowerShell history:" -ForegroundColor Green
+                Write-Words "----------------------------------------------------"
+                $psHistory | ForEach-Object { Write-Words $_ }
+                Add-Content -Path $logFile -Value $psHistory 
+            } catch {
+                Write-Words "PowerShell history file not found for user $username" -ForegroundColor Yellow
+            }
+        }
     }
 }
 function Get-InstalledPrograms {
