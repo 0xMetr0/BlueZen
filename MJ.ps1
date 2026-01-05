@@ -1,4 +1,4 @@
-function Get-Banner{
+﻿function Get-Banner{
     $banners = @({Get-DefaultBanner},{Get-MetroBanner},{Get-BabyBanner},{Get-WashereBanner})
     $randomBanner = Get-Random -InputObject $banners
     & $randomBanner
@@ -196,11 +196,13 @@ function Enforce-GPO{
     Downloads the DOD STIG GPOs and allows users to select which policy to apply to the machine.
     
     .NOTES
-    This script currently statically downloads the April 2024.
+    This script currently statically downloads the October 2025.
     This script currently automatically downloads and applies the GPO.
     #>
-    if ([System.IO.File]::Exists("$MainFolderPath\U_STIG_GPO_Package.zip" -eq $false)){ 
-        Invoke-WebRequest "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_STIG_GPO_Package_April_2024.zip" -Out "$MainFolderPath\U_STIG_GPO_Package.zip"
+
+    if ([System.IO.File]::Exists("$MainFolderPath\U_STIG_GPO_Package.zip") -eq $false){ 
+        write-Words "Downloading the DoD STIG GPO Package..."
+        Invoke-WebRequest "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_STIG_GPO_Package_October_2025.zip" -Out "$MainFolderPath\U_STIG_GPO_Package.zip"  
     }
     Expand-Archive -Path "$MainFolderPath\U_STIG_GPO_Package.zip" -Destination "$MainFolderPath\U_STIG_GPO_Package" -Force
     Import-Module GroupPolicy
@@ -217,10 +219,10 @@ function Enforce-GPO{
         else { Write-Words "Invalid choice, please try again." -ForegroundColor Red }
     }
     $UserVersionChoice = switch ($versionChoice) {
-        "Windows Server 2012" { "DoD WinSvr 2012 R2 MS and DC V3R7" }
-        "Windows Server 2016" { "DoD WinSvr 2016 MS and DC V2R8" }
-        "Windows Server 2019" { "DoD WinSvr 2019 MS and DC V2R9" }
-        "Windows Server 2022" { "DoD WinSvr 2022 MS and DC V1R5" }
+        "Windows Server 2012" { "DoD WinSvr 2012 R2 MS and DC v3r7" }
+        "Windows Server 2016" { "DoD WinSvr 2016 MS and DC v2r10" }
+        "Windows Server 2019" { "DoD WinSvr 2019 MS and DC v3r6" }
+        "Windows Server 2022" { "DoD WinSvr 2022 MS and DC v2r6" }
     }
     $userSettings = @("MS User", "MS Computer", "DC User", "DC Computer")
     $settingChoice = $null
@@ -1266,7 +1268,7 @@ function Run-SafeFunctions {
 if ($MyInvocation.MyCommand.Path) {
     $scriptPath = $MyInvocation.MyCommand.Path
     try {
-        $bytes = Get-Content -Path $scriptPath -Encoding Byte -TotalCount 4
+        $bytes = Get-Content -Path $scriptPath -AsByteStream -TotalCount 4
         $currentEncoding = if ($bytes[0] -eq 0xef -and $bytes[1] -eq 0xbb -and $bytes[2] -eq 0xbf) {"UTF8-BOM"} else {"Unknown"}
         Write-Host "Current encoding detected as: $currentEncoding"
         if ($currentEncoding -ne "UTF8-BOM") {
@@ -1277,7 +1279,7 @@ if ($MyInvocation.MyCommand.Path) {
             # Convert to UTF-8 with BOM
             $utf8WithBOM = New-Object System.Text.UTF8Encoding $true
             [System.IO.File]::WriteAllLines($scriptPath, $content, $utf8WithBOM)
-            $newBytes = Get-Content -Path $scriptPath -Encoding Byte -TotalCount 4
+            $newBytes = Get-Content -Path $scriptPath -AsByteStream -TotalCount 4
             Write-Host "Script encoding has been converted to UTF-8. Please run the script again."
             Start-Sleep -Seconds 2
             Exit 1
@@ -1312,3 +1314,4 @@ if ([string]::IsNullOrEmpty($MainFolderPath)){
 }
 Update-PowerShell
 Show-MainMenu
+
